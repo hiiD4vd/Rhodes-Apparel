@@ -1,0 +1,387 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --accent-color: #3e4a3d;
+  --muted-text: #666666;
+  --border-color: #000000; /* Black borders for the tabular look */
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-sans);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Custom Cursor */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ffffff; /* Must be white for difference blending to work properly */
+  pointer-events: none;
+  mix-blend-mode: difference;
+  z-index: 9999;
+  transition: transform 0.1s ease-out, width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cursor.hovered {
+  width: 60px;
+  height: 60px;
+  background-color: #ffffff;
+  mix-blend-mode: difference;
+}
+
+.cursor.has-text {
+  width: 90px;
+  height: 90px;
+  background-color: var(--text-color); /* Black background for text */
+  mix-blend-mode: normal; /* Turn off difference to read text clearly */
+  border: none;
+}
+
+.cursor-text {
+  color: var(--bg-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cursor.has-text .cursor-text {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  a, button, .hover-target {
+    cursor: none;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor {
+    display: none !important;
+  }
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  padding: 1.2rem 2.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  border-radius: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.btn-primary:hover::after {
+  transform: translateY(-100%);
+}
+
+.btn-primary span {
+  position: relative;
+  z-index: 2;
+  transition: color 0.4s;
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 4vw;
+}
+
+.section-padding {
+  padding: 8rem 0;
+}
+
+/* Page Transitions */
+.page-transition-enter { opacity: 0; }
+.page-transition-enter-active { opacity: 1; transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+.page-transition-exit { opacity: 1; }
+.page-transition-exit-active { opacity: 0; transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Marquee */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 4rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+}
+
+.marquee-content {
+  display: flex;
+  flex-shrink: 0;
+  animation: marquee 25s linear infinite;
+}
+
+.marquee-content span {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem);
+  text-transform: uppercase;
+  padding-right: 2rem;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.marquee-content span.filled {
+  color: var(--text-color);
+  -webkit-text-stroke: 0;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Image Reveal Mask */
+.reveal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  z-index: 10;
+  transform-origin: top;
+}
+
+/* Tabular Grid (Drop Dead Style) */
+.tabular-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+}
+
+@media (max-width: 1200px) {
+  .tabular-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .tabular-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .tabular-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tabular-item {
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Philosophy Responsive Grid */
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8vw;
+  align-items: center;
+}
+
+.philosophy-img-container {
+  position: relative;
+  height: 120vh;
+}
+
+@media (max-width: 900px) {
+  .philosophy-grid {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4rem;
+  }
+  .philosophy-img-container {
+    width: 100%;
+    height: 80vh;
+  }
+}
+
+/* Visibility Utilities */
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+/* Footer Responsive Grid */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 4rem;
+  margin-bottom: 5rem;
+}
+
+@media (max-width: 1000px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+  }
+}
+
+.tabular-image-container {
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  position: relative;
+  background-color: #f9f9f9;
+}
+
+.tabular-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-family: var(--font-sans);
+}
+
+.tabular-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.tabular-price {
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.wishlist-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--border-color);
+}
+
+/* Product Image Hover */
+.product-image-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.product-image-primary, .product-image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+}
+.product-image-hover {
+  opacity: 0;
+}
+.tabular-item:hover .product-image-primary {
+  opacity: 0;
+}
+.tabular-item:hover .product-image-hover {
+  opacity: 1;
+}
+
+
+
+/* Responsive Navbar Controls */
+@media (min-width: 901px) {
+  .mobile-menu-icon {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    display: none !important;
+  }
+}
