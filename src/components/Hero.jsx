@@ -19,20 +19,38 @@ export default function Hero() {
     if (!canvas) return;
     const context = canvas.getContext('2d');
     
-    // Preload images
-    const images = [];
-    let loadedImages = 0;
+    // Progressive Image Loading
+    const images = new Array(frameCount).fill(null);
+    let isComponentMounted = true;
     
-    for (let i = 1; i <= frameCount; i++) {
+    const loadImage = (index) => {
+      if (images[index]) return;
       const img = new Image();
-      const paddedIndex = i.toString().padStart(4, '0');
+      const paddedIndex = (index + 1).toString().padStart(4, '0');
       img.src = `/sequence/frame_${paddedIndex}.jpg`;
       img.onload = () => {
-        loadedImages++;
-        if (i === 1) render(1);
+        if (!isComponentMounted) return;
+        images[index] = img;
+        if (index === 0) render(1); // Render first frame immediately
+        // If this image is the currently requested frame, render it
+        if (index === Math.max(0, Math.floor(currentFrame.get()) - 1)) {
+          render(currentFrame.get());
+        }
       };
-      images.push(img);
-    }
+    };
+
+    // 1. Load the first frame immediately for fast Time To Interactive
+    loadImage(0);
+    
+    // 2. Load the rest asynchronously so we don't block the main thread
+    setTimeout(() => {
+      for (let i = 1; i < frameCount; i++) {
+        // Stagger the loading slightly to prevent network bottlenecks
+        setTimeout(() => {
+          if (isComponentMounted) loadImage(i);
+        }, i * 10);
+      }
+    }, 100);
 
     const render = (frameIndex) => {
       const index = Math.min(frameCount - 1, Math.max(0, Math.floor(frameIndex) - 1));
@@ -93,6 +111,7 @@ export default function Hero() {
     });
 
     return () => {
+      isComponentMounted = false;
       unsubscribe();
       window.removeEventListener('resize', handleResize);
     };
@@ -196,8 +215,8 @@ export default function Hero() {
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative'
-        }}>
-          <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+        }} aria-hidden="true">
+          <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} aria-label="Interactive 3D model sequence of Rhodes Apparel" />
         </div>
       </div>
 
